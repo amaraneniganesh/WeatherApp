@@ -1,32 +1,50 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import { Cloud, Wind, Droplets, Sun, ThermometerSun, MapPin, Search, Gauge, Eye, Sunrise, Sunset, Moon, CloudRain, Snowflake, Compass, CloudFog } from 'lucide-react';
-import './WeatherApp.css';
+import React, { useState } from "react";
+import axios from "axios";
+import {
+  Cloud,
+  Wind,
+  Droplets,
+  Sun,
+  ThermometerSun,
+  MapPin,
+  Search,
+  Gauge,
+  Eye,
+  Sunrise,
+  Sunset,
+  Moon,
+  CloudRain,
+  Snowflake,
+  Thermometer as ThermometerCold,
+  Compass,
+  CloudFog,
+} from "lucide-react";
+import "./WeatherApp.css";
 
 const WeatherApp = () => {
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
   const [weather, setWeather] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [activeForecastIndex, setActiveForecastIndex] = useState(null);
   const [selectedHour, setSelectedHour] = useState(null);
-  const [isCelsius, setIsCelsius] = useState(true); // Default to Celsius
 
-  const fetchWeatherWithQuery = async (locationQuery) => {
+  const fetchWeather = async (location = query) => {
     setLoading(true);
     setError(null);
     try {
       const options = {
-        method: 'GET',
-        url: 'https://weatherapi-com.p.rapidapi.com/forecast.json',
+        method: "GET",
+        url: "https://weatherapi-com.p.rapidapi.com/forecast.json",
         params: {
-          q: locationQuery,
-          days: '3'
+          q: location,
+          days: "3",
         },
         headers: {
-          'x-rapidapi-key': '86c15bbc87msh2428de2b60ecbc1p1f4531jsn548df7bf80c7',
-          'x-rapidapi-host': 'weatherapi-com.p.rapidapi.com'
-        }
+          "x-rapidapi-key":
+            "86c15bbc87msh2428de2b60ecbc1p1f4531jsn548df7bf80c7",
+          "x-rapidapi-host": "weatherapi-com.p.rapidapi.com",
+        },
       };
 
       const response = await axios.request(options);
@@ -34,29 +52,24 @@ const WeatherApp = () => {
       setActiveForecastIndex(null);
       setSelectedHour(null);
     } catch (err) {
-      setError('Failed to fetch weather data. Please try again.');
+      setError("Failed to fetch weather data. Please try again.");
     }
     setLoading(false);
   };
 
-  const fetchWeather = async () => {
-    if (!query.trim()) return;
-    fetchWeatherWithQuery(query);
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
-    fetchWeather();
+    if (query.trim()) {
+      fetchWeather();
+    }
   };
 
   const getLocationWeather = () => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition((position) => {
-        const locationQuery = `${position.coords.latitude},${position.coords.longitude}`;
-        setQuery(locationQuery); // Update state
-        fetchWeatherWithQuery(locationQuery); // Fetch weather immediately
-      }, () => {
-        setError("Unable to retrieve location. Please try again.");
+        const location = `${position.coords.latitude},${position.coords.longitude}`;
+        setQuery(location);
+        fetchWeather(location);
       });
     }
   };
@@ -66,19 +79,14 @@ const WeatherApp = () => {
     setSelectedHour(null);
   };
 
-  const toggleTemperatureUnit = () => {
-    setIsCelsius(!isCelsius);
-  };
-
-  const convertToFahrenheit = (celsius) => {
-    return (celsius * 9/5) + 32;
-  };
-
-  const renderDetailCard = (icon, title, value, unit = '') => (
+  const renderDetailCard = (icon, title, value, unit = "") => (
     <div className="detail-card">
       {icon}
       <h3>{title}</h3>
-      <p>{value}{unit}</p>
+      <p>
+        {value}
+        {unit}
+      </p>
     </div>
   );
 
@@ -92,7 +100,7 @@ const WeatherApp = () => {
         >
           <p>{new Date(hour.time).getHours()}:00</p>
           <img src={hour.condition.icon} alt={hour.condition.text} />
-          <p>{isCelsius ? Math.round(hour.temp_c) : Math.round(convertToFahrenheit(hour.temp_c))}°{isCelsius ? 'C' : 'F'}</p>
+          <p>{Math.round(hour.temp_c)}°C</p>
         </div>
       ))}
     </div>
@@ -120,6 +128,19 @@ const WeatherApp = () => {
 
   return (
     <div className="weather-app">
+      <h1 style={{ 
+  textAlign: 'center', 
+  fontSize: '2.5rem', 
+  fontWeight: 'bold', 
+  color: '#2c3e50', 
+  margin: '20px 0', 
+  textTransform: 'uppercase', 
+  letterSpacing: '2px', 
+  fontFamily: 'Arial, sans-serif', 
+  textShadow: '2px 2px 4px rgba(0, 0, 0, 0.2)' 
+}}>
+  VaataVaran MAN
+</h1>
       <div className="container">
         <form onSubmit={handleSubmit} className="search-box">
           <input
@@ -128,10 +149,11 @@ const WeatherApp = () => {
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Enter city name or coordinates..."
           />
-          <button type="submit"><Search size={20} /></button>
-          <button type="button" onClick={getLocationWeather}><MapPin size={20} /></button>
-          <button type="button" onClick={toggleTemperatureUnit}>
-            {isCelsius ? '°F' : '°C'}
+          <button type="submit">
+            <Search size={20} />
+          </button>
+          <button type="button" onClick={getLocationWeather}>
+            <MapPin size={20} />
           </button>
         </form>
 
@@ -141,37 +163,83 @@ const WeatherApp = () => {
           </div>
         )}
 
-        {error && (
-          <div className="error">
-            {error}
-          </div>
-        )}
+        {error && <div className="error">{error}</div>}
 
         {weather && (
           <div className="weather-info">
             <div className="current-weather">
-              <h2>{weather.location.name}, {weather.location.country}</h2>
+              <h2>
+                {weather.location.name}, {weather.location.country}
+              </h2>
               <div className="temperature">
-                {isCelsius
-                  ? `${Math.round(weather.current.temp_c)}°C`
-                  : `${Math.round(convertToFahrenheit(weather.current.temp_c))}°F`}
+                {Math.round(weather.current.temp_c)}°C /{" "}
+                {Math.round(weather.current.temp_f)}°F
               </div>
               <div className="condition">
-                <img src={weather.current.condition.icon} alt={weather.current.condition.text} />
+                <img
+                  src={weather.current.condition.icon}
+                  alt={weather.current.condition.text}
+                />
                 {weather.current.condition.text}
               </div>
 
               <div className="details">
-                {renderDetailCard(<ThermometerSun size={24} />, 'Feels Like', `${Math.round(isCelsius ? weather.current.feelslike_c : convertToFahrenheit(weather.current.feelslike_c))}°${isCelsius ? 'C' : 'F'}`)}
-                {renderDetailCard(<Wind size={24} />, 'Wind', `${weather.current.wind_kph}`, 'km/h')}
-                {renderDetailCard(<Compass size={24} />, 'Wind Direction', weather.current.wind_dir)}
-                {renderDetailCard(<Droplets size={24} />, 'Humidity', `${weather.current.humidity}%`)}
-                {renderDetailCard(<Cloud size={24} />, 'Cloud Cover', `${weather.current.cloud}%`)}
-                {renderDetailCard(<Gauge size={24} />, 'Pressure', `${weather.current.pressure_mb}`, 'mb')}
-                {renderDetailCard(<Eye size={24} />, 'Visibility', `${weather.current.vis_km}`, 'km')}
-                {renderDetailCard(<Sun size={24} />, 'UV Index', weather.current.uv)}
-                {renderDetailCard(<CloudFog size={24} />, 'Dew Point', `${Math.round(isCelsius ? weather.current.dewpoint_c : convertToFahrenheit(weather.current.dewpoint_c))}°${isCelsius ? 'C' : 'F'}`)}
-                {renderDetailCard(<Wind size={24} />, 'Gust', `${weather.current.gust_kph}`, 'km/h')}
+                {renderDetailCard(
+                  <ThermometerSun size={24} />,
+                  "Feels Like",
+                  `${Math.round(weather.current.feelslike_c)}°C / ${Math.round(
+                    weather.current.feelslike_f
+                  )}°F`
+                )}
+                {renderDetailCard(
+                  <Wind size={24} />,
+                  "Wind",
+                  `${weather.current.wind_kph}`,
+                  "km/h"
+                )}
+                {renderDetailCard(
+                  <Compass size={24} />,
+                  "Wind Direction",
+                  weather.current.wind_dir
+                )}
+                {renderDetailCard(
+                  <Droplets size={24} />,
+                  "Humidity",
+                  `${weather.current.humidity}%`
+                )}
+                {renderDetailCard(
+                  <Cloud size={24} />,
+                  "Cloud Cover",
+                  `${weather.current.cloud}%`
+                )}
+                {renderDetailCard(
+                  <Gauge size={24} />,
+                  "Pressure",
+                  `${weather.current.pressure_mb}`,
+                  "mb"
+                )}
+                {renderDetailCard(
+                  <Eye size={24} />,
+                  "Visibility",
+                  `${weather.current.vis_km}`,
+                  "km"
+                )}
+                {renderDetailCard(
+                  <Sun size={24} />,
+                  "UV Index",
+                  weather.current.uv
+                )}
+                {renderDetailCard(
+                  <CloudFog size={24} />,
+                  "Dew Point",
+                  `${Math.round(weather.current.dewpoint_c)}°C`
+                )}
+                {renderDetailCard(
+                  <Wind size={24} />,
+                  "Gust",
+                  `${weather.current.gust_kph}`,
+                  "km/h"
+                )}
               </div>
             </div>
 
@@ -179,34 +247,108 @@ const WeatherApp = () => {
               {weather.forecast.forecastday.map((day, index) => (
                 <div
                   key={day.date}
-                  className={`forecast-card ${activeForecastIndex === index ? 'active' : ''}`}
+                  className={`forecast-card ${
+                    activeForecastIndex === index ? "active" : ""
+                  }`}
                   onClick={() => toggleForecast(index)}
                 >
                   <div className="forecast-header">
-                    <h3>{new Date(day.date).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}</h3>
+                    <h3>
+                      {new Date(day.date).toLocaleDateString("en-US", {
+                        weekday: "long",
+                        month: "short",
+                        day: "numeric",
+                      })}
+                    </h3>
                     <div>
-                      <img src={day.day.condition.icon} alt={day.day.condition.text} />
+                      <img
+                        src={day.day.condition.icon}
+                        alt={day.day.condition.text}
+                      />
                       <p>
-                        {isCelsius
-                          ? `${Math.round(day.day.maxtemp_c)}°C / ${Math.round(day.day.mintemp_c)}°C`
-                          : `${Math.round(convertToFahrenheit(day.day.maxtemp_c))}°F / ${Math.round(convertToFahrenheit(day.day.mintemp_c))}°F`}
+                        {Math.round(day.day.maxtemp_c)}°C /{" "}
+                        {Math.round(day.day.maxtemp_f)}°F -{" "}
+                        {Math.round(day.day.mintemp_c)}°C /{" "}
+                        {Math.round(day.day.mintemp_f)}°F
                       </p>
                     </div>
                   </div>
-                  
+
                   {activeForecastIndex === index && (
                     <div className="forecast-details">
                       <div className="details">
-                        {renderDetailCard(<Wind size={20} />, 'Max Wind', `${day.day.maxwind_kph}`, 'km/h')}
-                        {renderDetailCard(<CloudRain size={20} />, 'Precipitation', `${day.day.totalprecip_mm}`, 'mm')}
-                        {renderDetailCard(<Snowflake size={20} />, 'Snow', `${day.day.totalsnow_cm}`, 'cm')}
-                        {renderDetailCard(<Eye size={20} />, 'Avg Visibility', `${day.day.avgvis_km}`, 'km')}
-                        {renderDetailCard(<Droplets size={20} />, 'Avg Humidity', `${day.day.avghumidity}%`)}
-                        {renderDetailCard(<Sun size={20} />, 'UV Index', day.day.uv)}
+                        {renderDetailCard(
+                          <Wind size={20} />,
+                          "Max Wind",
+                          `${day.day.maxwind_kph}`,
+                          "km/h"
+                        )}
+                        {renderDetailCard(
+                          <CloudRain size={20} />,
+                          "Precipitation",
+                          `${day.day.totalprecip_mm}`,
+                          "mm"
+                        )}
+                        {renderDetailCard(
+                          <Snowflake size={20} />,
+                          "Snow",
+                          `${day.day.totalsnow_cm}`,
+                          "cm"
+                        )}
+                        {renderDetailCard(
+                          <Eye size={20} />,
+                          "Avg Visibility",
+                          `${day.day.avgvis_km}`,
+                          "km"
+                        )}
+                        {renderDetailCard(
+                          <Droplets size={20} />,
+                          "Avg Humidity",
+                          `${day.day.avghumidity}%`
+                        )}
+                        {renderDetailCard(
+                          <Sun size={20} />,
+                          "UV Index",
+                          day.day.uv
+                        )}
                       </div>
-                      
+
                       {renderAstroInfo(day.astro)}
                       {renderHourlyForecast(day.hour)}
+
+                      {selectedHour !== null && (
+                        <div className="hour-details">
+                          <h4>
+                            Detailed forecast for{" "}
+                            {new Date(
+                              day.hour[selectedHour].time
+                            ).toLocaleTimeString()}
+                          </h4>
+                          <div className="details">
+                            {renderDetailCard(
+                              <ThermometerSun size={20} />,
+                              "Temperature",
+                              `${Math.round(day.hour[selectedHour].temp_c)}°C`
+                            )}
+                            {renderDetailCard(
+                              <Wind size={20} />,
+                              "Wind",
+                              `${day.hour[selectedHour].wind_kph}`,
+                              "km/h"
+                            )}
+                            {renderDetailCard(
+                              <Droplets size={20} />,
+                              "Humidity",
+                              `${day.hour[selectedHour].humidity}%`
+                            )}
+                            {renderDetailCard(
+                              <CloudRain size={20} />,
+                              "Rain Chance",
+                              `${day.hour[selectedHour].chance_of_rain}%`
+                            )}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
