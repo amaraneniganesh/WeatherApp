@@ -42,7 +42,7 @@ const WeatherApp = () => {
         },
         headers: {
           "x-rapidapi-key":
-            "86c15bbc87msh2428de2b60ecbc1p1f4531jsn548df7bf80c7",
+            "aad11d36a0msh8ba392534a1ac7fp14d056jsn1a47acca3254",
           "x-rapidapi-host": "weatherapi-com.p.rapidapi.com",
         },
       };
