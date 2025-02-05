@@ -1,5 +1,6 @@
 🌦 Vaatavaran Man
-Live at: https://vaatavaranman.onrender.com/
+## 🌍 Live Demo  
+🔗 *[Click here](https://VaatavaranMan.onrender.com/)* to view the live app.
 
 Vaatavaran Man is a modern weather forecasting web app that provides real-time weather updates and a detailed three-day forecast with hourly temperature and other key weather parameters.
 
