@@ -1,5 +1,5 @@
 🌦 Vaatavaran Man
-Live at: VaatavaranMan.onrender.com
+Live at: ![](https://vaatavaranman.onrender.com/)
 
 Vaatavaran Man is a modern weather forecasting web app that provides real-time weather updates and a detailed three-day forecast with hourly temperature and other key weather parameters.
 
@@ -9,7 +9,7 @@ Vaatavaran Man is a modern weather forecasting web app that provides real-time w
 🌍 Location-Based Data: Get weather updates based on your location.
 📊 User-Friendly Interface: Clean UI with intuitive navigation.
 🛠 Tech Stack
-Frontend: HTML, CSS, JavaScript
+Frontend: React js and Css
 Backend: Node.js / Express
 API: OpenWeatherMap / WeatherAPI (or any service used)
 Hosting: Render.com
